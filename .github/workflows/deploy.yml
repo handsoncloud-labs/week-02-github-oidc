@@ -1,0 +1,38 @@
+name: deploy
+
+# workflow_dispatch lets the video trigger this on any branch and show the
+# trust policy accepting main and refusing everything else.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+# id-token: write lets the job request a signed OIDC token from GitHub.
+# That's the only new permission OIDC needs.
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Prints the claims inside the token (never the token itself).
+      - name: Show OIDC claims
+        run: python3 scripts/oidc_claims.py
+
+      # Exchanges the token for temporary credentials. No secrets involved:
+      # the role ARN is a repository variable because it is an identifier.
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-arn: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-duration-seconds: 900
+
+      - name: Who am I
+        run: echo "ASSUMED $(aws sts get-caller-identity --query Arn --output text)"
+
+      - name: Deploy
+        run: aws s3 cp site/index.html "s3://${{ vars.ARTIFACT_BUCKET }}/site/index.html"

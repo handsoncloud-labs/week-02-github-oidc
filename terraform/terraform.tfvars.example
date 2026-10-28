@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars (git-ignored) and set your repo.
+github_repo = "your-github-user/handsoncloud-oidc-lab"
+
+# Set to false if this account already has a GitHub OIDC provider
+# (an account can hold only one; apply fails with EntityAlreadyExists).
+# create_oidc_provider = false
