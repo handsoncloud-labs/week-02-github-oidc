@@ -103,3 +103,9 @@ def test_ensure_branch_tolerates_existing():
         raise RuntimeError("gh api failed: Reference already exists")
 
     oidc.ensure_branch("me/lab", "demo-denied", "main", gh=fake_gh)  # no raise
+
+
+def test_short_sha_only_shortens_full_commit_hashes():
+    full = "aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd"
+    assert oidc.short_sha(full) == "aws-actions/configure-aws-credentials@e125382"
+    assert oidc.short_sha("actions/checkout@v4") == "actions/checkout@v4"

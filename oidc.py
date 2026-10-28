@@ -54,6 +54,11 @@ def fail(msg: str) -> "None":
     raise SystemExit(1)
 
 
+def short_sha(name: str) -> str:
+    """actions/checkout@3d3c42e5...(40 hex) -> actions/checkout@3d3c42e, as GitHub shows it."""
+    return re.sub(r"@([0-9a-f]{7})[0-9a-f]{33}\b", r"@\1", name)
+
+
 def redact(text: str) -> str:
     """Hide 12-digit AWS account IDs before anything is shown on camera."""
     return re.sub(r"(?<!\d)\d{12}(?!\d)", "************", text)
@@ -267,7 +272,7 @@ def cmd_run(args) -> int:
 
     for name, conclusion in r["steps"]:
         mark = {"success": f"{GREEN}✓", "failure": f"{RED}✗"}.get(conclusion, f"{DIM}–")
-        print(f"  {mark}{RESET} {name.removeprefix('Run ')}")
+        print(f"  {mark}{RESET} {short_sha(name.removeprefix('Run '))}")
     for k in ("sub", "ref"):
         if k in r["claims"]:
             print(f"  {DIM}claim {k}{RESET} {r['claims'][k]}")
