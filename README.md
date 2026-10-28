@@ -26,7 +26,7 @@ The audience is the same for every GitHub user, so **the `sub` condition is what
 
 ## Run it
 
-Requires Terraform ≥ 1.7, the `gh` CLI (`gh auth login`), Python 3.11+, and AWS credentials that can create IAM roles and S3 buckets.
+Requires Terraform ≥ 1.9, the `gh` CLI (`gh auth login`), Python 3.11+, and AWS credentials that can create IAM roles and S3 buckets.
 
 ```bash
 # 1. This folder must be the root of a GitHub repo, so the workflow runs.
