@@ -20,6 +20,23 @@ variable "github_repo" {
   }
 }
 
+variable "github_owner_id" {
+  description = "Numeric GitHub owner (org/user) ID. New repos get immutable subjects, repo:owner@ID/name@ID:..., which survive renames and transfers. Leave null for the classic repo:owner/name subject. Find it with: gh api repos/OWNER/REPO --jq '[.owner.id,.id]'"
+  type        = string
+  default     = null
+}
+
+variable "github_repo_id" {
+  description = "Numeric GitHub repository ID, paired with github_owner_id."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = (var.github_owner_id == null) == (var.github_repo_id == null)
+    error_message = "Set github_owner_id and github_repo_id together, or neither."
+  }
+}
+
 variable "deploy_branch" {
   description = "The only branch whose workflows may assume the deploy role."
   type        = string

@@ -40,7 +40,8 @@ GREEN, RED, CYAN, DIM, BOLD, RESET = (
     else ("",) * 6
 )
 
-SUB_RE = re.compile(r"^repo:(?P<repo>[^:]+):ref:refs/heads/(?P<branch>.+)$")
+SUB_RE = re.compile(r"^repo:(?P<owner>[^/@:]+)(?:@(?P<owner_id>\d+))?/(?P<name>[^/@:]+)(?:@(?P<repo_id>\d+))?"
+                    r":ref:refs/heads/(?P<branch>.+)$")
 CLAIM_RE = re.compile(r"CLAIM (\w+)=(\S+)")
 ASSUMED_RE = re.compile(r"ASSUMED arn:aws:sts::\d+:assumed-role/([\w+=,.@-]+)/")
 DENIED_RE = re.compile(r"Not authorized to perform sts:AssumeRoleWithWebIdentity")
@@ -130,8 +131,9 @@ def analyze_trust(policy: dict, host: str = OIDC_HOST) -> dict:
         "audience": aud[0] if aud else "",
         "sub": sub[0] if len(sub) == 1 else ", ".join(sub),
         "sub_operator": sub_op or "(missing)",
-        "repo": m["repo"] if m else "",
+        "repo": f"{m['owner']}/{m['name']}" if m else "",
         "branch": m["branch"] if m else "",
+        "pins_ids": bool(m and m["owner_id"] and m["repo_id"]),
         "wildcard": wildcard,
     }
 
@@ -243,7 +245,8 @@ def cmd_trust(_args) -> int:
         print(f"{RED}✗ wildcard or missing condition on sub: too broad{RESET}")
         return 1
     print(f"{GREEN}✓ exact subject, no wildcard{RESET}")
-    record("trust", {k: t[k] for k in ("repo", "branch", "audience", "wildcard")})
+    print(f"{GREEN}✓{RESET} pinned to numeric IDs" if t["pins_ids"] else f"{DIM}– not pinned to numeric IDs{RESET}")
+    record("trust", {k: t[k] for k in ("repo", "branch", "audience", "wildcard", "pins_ids")})
     return 0
 
 

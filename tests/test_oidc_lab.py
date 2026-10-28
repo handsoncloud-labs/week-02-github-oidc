@@ -21,6 +21,12 @@ def test_trust_exact_subject_is_not_wildcard():
     assert (t["repo"], t["branch"], t["audience"], t["wildcard"]) == ("me/lab", "main", "sts.amazonaws.com", False)
 
 
+def test_trust_understands_immutable_subjects():
+    t = oidc.analyze_trust(policy(sub="repo:me@11/lab@22:ref:refs/heads/main"))
+    assert (t["repo"], t["branch"], t["pins_ids"], t["wildcard"]) == ("me/lab", "main", True, False)
+    assert oidc.analyze_trust(policy())["pins_ids"] is False
+
+
 @pytest.mark.parametrize("p", [
     policy(sub="repo:me/*:ref:refs/heads/main"),
     policy(sub_op="StringLike", sub="repo:me/lab:ref:refs/heads/main"),

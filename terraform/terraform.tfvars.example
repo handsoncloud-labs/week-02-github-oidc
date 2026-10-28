@@ -1,6 +1,11 @@
 # Copy to terraform.tfvars (git-ignored) and set your repo.
 github_repo = "your-github-user/handsoncloud-oidc-lab"
 
+# New repos use immutable subjects. Get both IDs with:
+#   gh api repos/OWNER/REPO --jq '[.owner.id, .id]'
+# github_owner_id = "123456"
+# github_repo_id  = "7891011"
+
 # Set to false if this account already has a GitHub OIDC provider
 # (an account can hold only one; apply fails with EntityAlreadyExists).
 # create_oidc_provider = false

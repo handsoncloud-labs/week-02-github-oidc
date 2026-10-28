@@ -23,3 +23,8 @@ output "github_repo" {
 output "deploy_branch" {
   value = var.deploy_branch
 }
+
+output "deploy_sub" {
+  description = "The exact token subject the trust policy requires."
+  value       = local.deploy_sub
+}
